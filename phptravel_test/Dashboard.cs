@@ -18,6 +18,7 @@ namespace phptravel_test
     {
         // Create a setup process to access into phptravels page
         IWebDriver driver;
+        private Auth auth = new Auth();
         [SetUp]
         public void startBrowser()
         {
@@ -29,39 +30,38 @@ namespace phptravel_test
         public void Dashboard()
         {
             // Go to the phptravels page
-            driver.Url = ("https://phptravels.net/api/admin");
-            doLogin();
+            auth.doLogin(driver);
             verifyItems();
             settingDropdownMenu();
             bookingPage();
         }
 
-        void doLogin()
-        {
-            // Find the email field and assign the value to it
-            IWebElement email = driver.FindElement(By.Name("email"));
-            email.SendKeys("admin@phptravels.com");
+        //void doLogin()
+        //{
+        //    // Find the email field and assign the value to it
+        //    IWebElement email = driver.FindElement(By.Name("email"));
+        //    email.SendKeys("admin@phptravels.com");
 
-            // Find the password field and assign the value to it
-            IWebElement password = driver.FindElement(By.Name("password"));
-            password.SendKeys("demoadmin");
+        //    // Find the password field and assign the value to it
+        //    IWebElement password = driver.FindElement(By.Name("password"));
+        //    password.SendKeys("demoadmin");
 
-            // Find the submit button and click after entered the email and password to log in
-            IWebElement pressLogin = driver.FindElement(By.XPath("//button[@type = 'submit']"));
-            pressLogin.Click();
+        //    // Find the submit button and click after entered the email and password to log in
+        //    IWebElement pressLogin = driver.FindElement(By.XPath("//button[@type = 'submit']"));
+        //    pressLogin.Click();
 
-            // Create a wait method to wait the logging in process finishes successfully and move to Dashboard page
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-            Func<IWebDriver, bool> waitForElement = new Func<IWebDriver, bool>((IWebDriver Web) =>
-            {
-                return Web.Title == "Dashboard";
-            });
-            wait.Until(waitForElement);
+        //    // Create a wait method to wait the logging in process finishes successfully and move to Dashboard page
+        //    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+        //    Func<IWebDriver, bool> waitForElement = new Func<IWebDriver, bool>((IWebDriver Web) =>
+        //    {
+        //        return Web.Title == "Dashboard";
+        //    });
+        //    wait.Until(waitForElement);
 
-            // Check whether the Dashboad page is displayed
-            string currentWindowTitle = "Dashboard";
-            Assert.AreEqual(currentWindowTitle, driver.Title);
-        }
+        //    // Check whether the Dashboad page is displayed
+        //    string currentWindowTitle = "Dashboard";
+        //    Assert.AreEqual(currentWindowTitle, driver.Title);
+        //}
 
         void verifyItems()
         {
@@ -70,35 +70,15 @@ namespace phptravel_test
             IWebElement vDashboard = driver.FindElement(By.XPath("//div[@id='layoutDrawer_content']//div[@class='container-xl p-4']/div[1]//h1[@class='display-4 mb-0']"));
             Assert.True(vDashboard.Displayed);
 
-            IWebElement vConfirmed = driver.FindElement(By.XPath("//*[@id='layoutDrawer_content']/main/div/div[2]/div[1]/a/div/div/div/div[1]/div[2]"));
-            Assert.True(vConfirmed.Displayed);
-            IWebElement iconConfirmed = driver.FindElement(By.XPath("//*[@id='layoutDrawer_content']/main/div/div[2]/div[1]/a/div/div/div/div[2]"));
-            Assert.True(iconConfirmed.Displayed);
+            var expListTexts = new string[] { "Confrimed Bookings", "Pending Bookings", "Cancelled Bookings", "Paid Bookings","Unpaid Bookings","Refunded Bookings"}; 
+            ReadOnlyCollection<IWebElement> dashBListText = driver.FindElements(By.XPath("//div[@class='row gx-3']//child::div[@class='card-text']"));
+            List<string> dashText = dashBListText.Select(o => o.Text).ToList();
+            Assert.True(expListTexts.SequenceEqual(dashText));
 
-            IWebElement vPending = driver.FindElement(By.XPath("//*[@id='layoutDrawer_content']/main/div/div[2]/div[2]/a/div/div/div/div[1]/div[2]"));
-            Assert.True(vPending.Displayed);
-            IWebElement iconPending = driver.FindElement(By.XPath("//*[@id='layoutDrawer_content']/main/div/div[2]/div[2]/a/div/div/div/div[2]"));
-            Assert.True(iconPending.Displayed);
-
-            IWebElement vCancelled = driver.FindElement(By.XPath("//*[@id='layoutDrawer_content']/main/div/div[2]/div[3]/a/div/div/div/div[1]/div[2]"));
-            Assert.True(vCancelled.Displayed);
-            IWebElement iconCancelled = driver.FindElement(By.XPath("//*[@id='layoutDrawer_content']/main/div/div[2]/div[3]/a/div/div/div/div[2]"));
-            Assert.True(iconCancelled.Displayed);
-
-            IWebElement vPaid = driver.FindElement(By.XPath("//*[@id='layoutDrawer_content']/main/div/div[2]/div[4]/a/div/div/div/div[1]/div[2]"));
-            Assert.True(vPaid.Displayed);
-            IWebElement iconPaid = driver.FindElement(By.XPath("//*[@id='layoutDrawer_content']/main/div/div[2]/div[4]/a/div/div/div/div[2]"));
-            Assert.True(iconPaid.Displayed);
-
-            IWebElement vUnPaid = driver.FindElement(By.XPath("//*[@id='layoutDrawer_content']/main/div/div[2]/div[5]/a/div/div/div/div[1]/div[2]"));
-            Assert.True(vUnPaid.Displayed);
-            IWebElement iconUnPaid = driver.FindElement(By.XPath("//*[@id='layoutDrawer_content']/main/div/div[2]/div[5]/a/div/div/div/div[2]"));
-            Assert.True(iconUnPaid.Displayed);
-
-            IWebElement vRefunded = driver.FindElement(By.XPath("//*[@id='layoutDrawer_content']/main/div/div[2]/div[6]/a/div/div/div/div[1]/div[2]"));
-            Assert.True(vRefunded.Displayed);
-            IWebElement iconRefunded = driver.FindElement(By.XPath("//*[@id='layoutDrawer_content']/main/div/div[2]/div[6]/a/div/div/div/div[2]"));
-            Assert.True(iconRefunded.Displayed);
+            var expListIcons = new string[] { "task_alt", "event", "clear", "credit_score", "production_quantity_limits", "money_off" };
+            ReadOnlyCollection<IWebElement> dashBListIcons = driver.FindElements(By.XPath("//div[@class='row gx-3']//child::i[@class='material-icons']"));
+            List<string> dashIcon = dashBListIcons.Select(o => o.Text).ToList();
+            Assert.True(expListIcons.SequenceEqual(dashIcon));
         }
 
         void settingDropdownMenu()
@@ -151,7 +131,7 @@ namespace phptravel_test
             // Find the data table in booking page and verify it contains the columns
             driver.Manage().Window.Maximize();
             IWebElement bookingTable = driver.FindElement(By.XPath("//table[@id='data']"));
-            List<IWebElement> listThElem = new List<IWebElement>(bookingTable.FindElements(By.TagName("th")));
+            ReadOnlyCollection<IWebElement> listThElem = bookingTable.FindElements(By.TagName("th"));
 
             foreach (var elemTh in listThElem)
             {
