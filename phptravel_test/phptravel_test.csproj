@@ -39,8 +39,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Test.cs" />
     <Compile Include="Auth.cs" />
+    <Compile Include="Dashboard.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
