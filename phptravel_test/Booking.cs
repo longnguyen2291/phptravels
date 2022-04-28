@@ -43,7 +43,7 @@ namespace phptravel_test
 
             // Find and verify seach textbox has the default value is empty
             IWebElement searchBar = driver.FindElement(By.XPath("//div[@class='dataTables_filter']//child::input"));
-            String searchValue = searchBar.GetAttribute("placeholder");
+            String searchValue = searchBar.GetAttribute("value");
             Assert.True(String.IsNullOrEmpty(searchValue));
 
             // Find the data table in booking page and verify it contains the required columns
