@@ -25,7 +25,7 @@ namespace phptravel_test
             pressLogin.Click();
 
             // Create a wait method to wait the logging in process finishes successfully and move to Dashboard page
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(15));
             Func<IWebDriver, bool> waitForElement = new Func<IWebDriver, bool>((IWebDriver Web) =>
             {
                 return Web.Title == "Dashboard";
